@@ -19,7 +19,7 @@ app.use(express.json())
 // console.log(process.env.DB_USER);
 // console.log(process.env.DB_PASS);
 
-const { MongoClient, ServerApiVersion  } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId  } = require('mongodb');
 const uri = `mongodb+srv://food4521:JzIhphfIlCiwzaKA@cluster0.xm8ksdz.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -35,10 +35,64 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
 
-    // const bransCollection = client.db('bransdDB').collection("brand");
+    const foodCollection = client.db('foodDB').collection("food");
+    const userDataCollection = client.db('foodDB').collection("userDb");
     // const productCollection = client.db('productDB').collection("product");
 
     
+
+// All get operation
+// feuarted 6 data on home page get oparetion
+ app.get("/foods" , async(req , res)=>{
+      const cursur = foodCollection.find();
+      const result = await cursur.toArray();
+      res.send(result)
+    })
+
+
+    // aviable food to get data
+
+ app.get("/aviableFood" , async(req , res)=>{
+      const cursur = foodCollection.find();
+      const result = await cursur.toArray();
+      res.send(result)
+    })
+
+    // Get one single Data
+    app.get("/foods/:id" , async(req , res)=>{
+   try {
+    const   id  = req.params.id;
+    console.log(id);
+    const queary = {_id : new ObjectId(id)}
+    console.log(queary);
+    const result = await foodCollection.findOne(queary );
+    // console.log(result);
+    res.send(result)
+   } catch (error) {
+    console.log(error);
+   }
+    })
+
+
+// All post Operation 
+// User post Opertaion
+
+    app.post("/foods", async(req , res)=> {
+      const users = req.body;
+      const result = await foodCollection.insertOne(users)  
+    // console.log(brand); 
+      res.send(result)
+  })
+
+
+
+
+
+
+
+
+
+
     // app.get("/brand/:brandName" , async(req , res)=>{
     //   const   brandName  = req.params.brandName;
     //   const queary = {brandName:brandName}
@@ -72,11 +126,7 @@ async function run() {
 
 
 
-    // app.get("/products" , async(req , res)=>{
-    //   const cursur = productCollection.find();
-    //   const result = await cursur.toArray();
-    //   res.send(result)
-    // })
+   
 
 
     // app.get("/update/:id" , async(req , res)=>{
@@ -85,6 +135,9 @@ async function run() {
     //   const result = await bransCollection.findOne(queary);
     //   res.send(result)
     // })
+
+
+
 
     // app.put("/update/:id" , async(req , res)=>{
     //   const   id  = req.params.id;
