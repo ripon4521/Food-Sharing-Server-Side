@@ -87,6 +87,14 @@ async function run() {
     console.log(error);
    }
     })
+    // fOOD rEQUEST gET oPERATION
+    app.get("/foodRequest" , async(req , res)=>{
+      const cursur = foodRequestCollection.find();
+      const result = await cursur.toArray();
+      res.send(result)
+    })
+
+
 
 
 // All post Operation 
@@ -134,8 +142,37 @@ async function run() {
       res.send(result)
     })
 
+
+    // Food Request Put Operation  
+    app.put("/foodRequest/:id" , async(req , res)=>{
+      const   id  = req.params.id;
+      const filter = {_id : new ObjectId(id)}
+      const option = {upsert: true}
+      const updateFood = req.body;
+      const food ={
+        $set:{
+          food_status:updateFood.food_status,
+          
+        }
+      }
+      const result = await foodRequestCollection.updateOne(filter,food,option);
+      res.send(result)
+    })
+
     // Delete Operation 
 
+  //  app.delete("/foodRequest/:id" , async(req , res)=>{
+  //    try {
+  //     const   id  = req.params.id;
+  //     const queary = {_id : new ObjectId(id)}
+  //     const result = await foodRequestCollection.deleteOne(queary);
+  //     res.send(result)
+  //     console.log(id);
+  //    } catch (error) {
+  //     console.log(error);
+  //    }
+  //   })
+    // Cancel Request Delete Opreation
    app.delete("/foods/:id" , async(req , res)=>{
      try {
       const   id  = req.params.id;
