@@ -16,12 +16,12 @@ app.use(express.json())
 
 
 
-// console.log(process.env.DB_USER);
-// console.log(process.env.DB_PASS);
+console.log(process.env.DB_USER);
+console.log(process.env.DB_PASS);
 
 const { MongoClient, ServerApiVersion, ObjectId  } = require('mongodb');
 
-const uri = `mongodb+srv://food4521:JzIhphfIlCiwzaKA@cluster0.xm8ksdz.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.xm8ksdz.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -161,18 +161,21 @@ async function run() {
 
     // Delete Operation 
 
-  //  app.delete("/foodRequest/:id" , async(req , res)=>{
-  //    try {
-  //     const   id  = req.params.id;
-  //     const queary = {_id : new ObjectId(id)}
-  //     const result = await foodRequestCollection.deleteOne(queary);
-  //     res.send(result)
-  //     console.log(id);
-  //    } catch (error) {
-  //     console.log(error);
-  //    }
-  //   })
     // Cancel Request Delete Opreation
+   app.delete("/foodRequest/:id" , async(req , res)=>{
+     try {
+      const   id  = req.params.id;
+      const queary = {_id : new ObjectId(id)}
+      const result = await foodRequestCollection.deleteOne(queary);
+      res.send(result)
+      console.log(id);
+     } catch (error) {
+      console.log(error);
+     }
+    })
+
+
+
    app.delete("/foods/:id" , async(req , res)=>{
      try {
       const   id  = req.params.id;
