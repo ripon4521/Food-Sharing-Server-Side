@@ -20,6 +20,7 @@ app.use(express.json())
 // console.log(process.env.DB_PASS);
 
 const { MongoClient, ServerApiVersion, ObjectId  } = require('mongodb');
+
 const uri = `mongodb+srv://food4521:JzIhphfIlCiwzaKA@cluster0.xm8ksdz.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -36,7 +37,7 @@ async function run() {
     // await client.connect();
 
     const foodCollection = client.db('foodDB').collection("food");
-    const userDataCollection = client.db('foodDB').collection("userDb");
+    const foodRequestCollection = client.db('foodDB').collection("foodRequestDb");
     // const productCollection = client.db('productDB').collection("product");
 
     
@@ -62,9 +63,23 @@ async function run() {
     app.get("/foods/:id" , async(req , res)=>{
    try {
     const   id  = req.params.id;
-    console.log(id);
+    // console.log(id);
     const queary = {_id : new ObjectId(id)}
-    console.log(queary);
+    // console.log(queary);
+    const result = await foodCollection.findOne(queary );
+    // console.log(result);
+    res.send(result)
+   } catch (error) {
+    console.log(error);
+   }
+    })
+    
+    app.get("/aviableFood:id" , async(req , res)=>{
+   try {
+    const   id  = req.params.id;
+    // console.log(id);
+    const queary = {_id : new ObjectId(id)}
+    // console.log(queary);
     const result = await foodCollection.findOne(queary );
     // console.log(result);
     res.send(result)
@@ -85,6 +100,53 @@ async function run() {
   })
 
 
+  // Food Request Post Operation 
+    app.post("/foodRequest", async(req , res)=> {
+      const request = req.body;
+      const result = await foodRequestCollection.insertOne(request)  
+    // console.log(brand); 
+      res.send(result)
+  })
+
+
+
+
+
+
+
+  // All Update Operation 
+      app.put("/foods/:id" , async(req , res)=>{
+      const   id  = req.params.id;
+      const filter = {_id : new ObjectId(id)}
+      const option = {upsert: true}
+      const updateFood = req.body;
+      const food ={
+        $set:{
+          food_name:updateFood.food_name,
+          additional_notes:updateFood.additional_notes ,
+          food_quantity:updateFood.food_quantity ,
+          expired_date:updateFood.expired_date,
+          pickup_location:updateFood.pickup_location,
+          donator:updateFood.donator
+        }
+      }
+      const result = await foodCollection.updateOne(filter,food,option);
+      res.send(result)
+    })
+
+    // Delete Operation 
+
+   app.delete("/foods/:id" , async(req , res)=>{
+     try {
+      const   id  = req.params.id;
+      const queary = {_id : new ObjectId(id)}
+      const result = await foodCollection.deleteOne(queary);
+      res.send(result)
+      console.log(id);
+     } catch (error) {
+      console.log(error);
+     }
+    })
 
 
 
